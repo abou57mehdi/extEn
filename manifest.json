@@ -1,0 +1,69 @@
+{
+  "manifest_version": 3,
+  "name": "AI Checkpoint",
+  "version": "1.0",
+  "description": "Capture automatiquement les conversations avec des agents IA et génère des résumés",
+  "permissions": ["storage", "activeTab", "scripting", "clipboardWrite"],
+  "host_permissions": [
+    "http://localhost:3000/*",
+    "https://chat.openai.com/*",
+    "https://chat.apenai.com/*",
+    "https://*.claude.ai/*",
+    "https://*.anthropic.com/*",
+    "https://bard.google.com/*",
+    "https://gemini.google.com/*"
+  ],
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "AI Checkpoint",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chat.openai.com/*",
+        "https://chat.apenai.com/*",
+        "https://*.claude.ai/*",
+        "https://*.anthropic.com/*",
+        "https://bard.google.com/*",
+        "https://gemini.google.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "shadow-dom-helper.js",
+        "message-retriever.js",
+        "message-bridge.js",
+        "diffdom.min.js",
+        "observers.js",
+        "chatgpt-content.js",
+        "chatgpt-fix.js",
+        "debug-chatgpt.js",
+        "debug-claude.js",
+        "message-extractor-test.js",
+        "extension-reload.js"
+      ],
+      "matches": [
+        "https://chat.openai.com/*",
+        "https://chat.apenai.com/*",
+        "https://*.claude.ai/*",
+        "https://*.anthropic.com/*",
+        "https://bard.google.com/*",
+        "https://gemini.google.com/*"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "name": "conversation-log-extension",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Chrome extension to log and summarize AI conversations",
+  "main": "build-extension.js",
+  "scripts": {
+    "start": "set NODE_OPTIONS=--openssl-legacy-provider && react-scripts start",
+    "clean": "rimraf --force build",
+    "copy-static": "node ./node_modules/copyfiles/copyfiles -u 1 \"src/**/*\" \"public/**/*\" build/",
+    "copy-manifest": "node ./node_modules/copyfiles/copyfiles -f manifest.json build/",
+    "copy-icons": "node ./node_modules/copyfiles/copyfiles -u 2 \"public/icons/**/*\" build/icons/",
+    "copy-observer-files": "node ./node_modules/copyfiles/copyfiles -f \"*.js\" build/",
+    "verify-files": "node verify-files.js",
+    "build": "npm run verify-files && npm run clean && node build-extension.js",
+    "build:no-verify": "node build-extension.js",
+    "build:enhanced-ui": "npm run clean && node build-extension.js",
+    "verify:enhanced-ui": "node verify-enhanced-ui.js",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "server": "node server/server.js",
+    "dev": "concurrently \"npm run start\" \"npm run server\"",
+    "watch": "nodemon --watch src --watch *.js --ext js,html,json,css --exec \"npm run build:no-verify\""
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ajv": "^8.0.3",
+    "axios": "^0.21.1",
+    "chalk": "^4.1.2",
+    "concurrently": "^9.1.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "fs-extra": "^11.3.0",
+    "mongodb": "^4.12.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "4.0.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.16.0",
+    "autoprefixer": "^9.8.6",
+    "copyfiles": "^2.4.1",
+    "nodemon": "^3.1.10",
+    "postcss": "^7.0.36",
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.2"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

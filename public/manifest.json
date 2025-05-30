@@ -1,0 +1,63 @@
+{
+  "manifest_version": 3,
+  "name": "AI Conversation Logger",
+  "version": "1.0.0",
+  "description": "Log and summarize conversations from AI platforms (ChatGPT, Claude, Gemini)",
+  "permissions": ["activeTab", "storage", "scripting"],
+  "host_permissions": [
+    "https://chat.openai.com/*",
+    "https://chat.apenai.com/*",
+    "https://claude.ai/*",
+    "https://gemini.google.com/*"
+  ],
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chat.openai.com/*",
+        "https://chat.apenai.com/*",
+        "https://claude.ai/*",
+        "https://gemini.google.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "config.js",
+        "popup.js",
+        "shadow-dom-helper.js",
+        "message-retriever.js",
+        "message-bridge.js",
+        "chatgpt-fix.js",
+        "debug-chatgpt.js",
+        "message-extractor-test.js",
+        "extension-reload.js"
+      ],
+      "matches": [
+        "https://chat.openai.com/*",
+        "https://chat.apenai.com/*",
+        "https://claude.ai/*",
+        "https://gemini.google.com/*"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conversation Log & Summary - Test Page</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    /* Fallback styles in case CDN fails */
+    body { font-family: Arial, sans-serif; background-color: #f1f5f9; }
+    .container { max-width: 600px; margin: 0 auto; padding: 1rem; }
+    .card { background-color: white; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .tabs { display: flex; border-bottom: 1px solid #e5e7eb; margin-bottom: 1rem; }
+    .tab { padding: 0.5rem 1rem; cursor: pointer; }
+    .tab.active { border-bottom: 2px solid #3b82f6; font-weight: 500; }
+    .tab:not(.active) { color: #6b7280; }
+    textarea { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.25rem; margin-bottom: 0.5rem; height: 6rem; }
+    button.primary { background-color: #10b981; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; border: none; cursor: pointer; }
+    button.primary:hover { background-color: #059669; }
+    button.secondary { background-color: #6366f1; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; border: none; cursor: pointer; }
+    button.secondary:hover { background-color: #4f46e5; }
+    button.danger { background-color: #ef4444; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; border: none; cursor: pointer; }
+    button.danger:hover { background-color: #dc2626; }
+    button:disabled { background-color: #9ca3af; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <div class="container mx-auto px-4 py-8">
+    <header class="mb-8 text-center">
+      <h1 class="text-2xl font-bold mb-2">Conversation Log & Summary</h1>
+      <p class="text-gray-600">Test Page for Web Interface</p>
+    </header>
+
+    <div id="app" class="app-container p-4 max-w-md mx-auto bg-white rounded-lg shadow-md">
+      <h1 class="text-xl font-bold mb-4 text-center">Conversation Log & Summary</h1>
+      
+      <!-- Tabs -->
+      <div class="flex mb-4 border-b">
+        <button id="manual-tab" class="px-4 py-2 border-b-2 border-blue-500 font-medium">Manual Input</button>
+        <button id="captured-tab" class="px-4 py-2 text-gray-500">AI Conversations</button>
+      </div>
+
+      <!-- Manual input section -->
+      <div id="manual-section" class="mb-4">
+        <textarea
+          id="message-input"
+          class="w-full p-2 border border-gray-300 rounded mb-2 h-24"
+          placeholder="Type your message here..."
+        ></textarea>
+        <button 
+          id="add-log-btn"
+          class="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition duration-150"
+        >
+          Add to Log
+        </button>
+        
+        <!-- Conversation logs -->
+        <div id="conversation-logs" class="mt-4">
+          <h2 class="text-lg font-semibold">Logs:</h2>
+          <div id="logs-container" class="max-h-60 overflow-y-auto"></div>
+        </div>
+      </div>
+
+      <!-- Captured conversations section -->
+      <div id="captured-section" class="mb-4" style="display: none;">
+        <div id="platform-info" class="mb-2 p-2 bg-blue-100 rounded" style="display: none;">
+          <p>Platform detected: <strong id="platform-name"></strong></p>
+          <p>Number of messages: <strong id="message-count"></strong></p>
+        </div>
+        
+        <p id="no-conversation" class="text-gray-500 italic mb-4">
+          No conversation detected. Visit ChatGPT, Claude or another AI platform.
+        </p>
+        
+        <div id="captured-container" class="max-h-60 overflow-y-auto border rounded p-2" style="display: none;"></div>
+        
+        <div id="summary-container" class="mt-4 p-3 bg-gray-100 rounded" style="display: none;">
+          <h3 class="font-semibold">Generated summary:</h3>
+          <p id="summary-text" class="mt-2 text-sm"></p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap justify-between mt-4 gap-2">
+        <!-- Download button -->
+        <button
+          id="download-btn"
+          class="download-btn mt-4 px-4 py-2 rounded transition duration-150 bg-gray-300 text-gray-500 cursor-not-allowed"
+          disabled
+        >
+          Download Summary
+        </button>
+        
+        <!-- Generate Summary button -->
+        <button
+          id="generate-btn"
+          class="px-4 py-2 rounded transition duration-150 bg-gray-300 text-gray-500 cursor-not-allowed"
+          disabled
+        >
+          Generate Summary
+        </button>
+        
+        <!-- Clear button -->
+        <button
+          id="clear-btn"
+          class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-150"
+          style="display: none;"
+        >
+          Clear
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State
+    let conversationLogs = [];
+    let capturedConversations = [];
+    let activeTab = 'manual';
+    let aiPlatform = null;
+    let latestSummary = '';
+
+    // DOM Elements
+    const manualTab = document.getElementById('manual-tab');
+    const capturedTab = document.getElementById('captured-tab');
+    const manualSection = document.getElementById('manual-section');
+    const capturedSection = document.getElementById('captured-section');
+    const messageInput = document.getElementById('message-input');
+    const addLogBtn = document.getElementById('add-log-btn');
+    const logsContainer = document.getElementById('logs-container');
+    const platformInfo = document.getElementById('platform-info');
+    const platformName = document.getElementById('platform-name');
+    const messageCount = document.getElementById('message-count');
+    const noConversation = document.getElementById('no-conversation');
+    const capturedContainer = document.getElementById('captured-container');
+    const summaryContainer = document.getElementById('summary-container');
+    const summaryText = document.getElementById('summary-text');
+    const downloadBtn = document.getElementById('download-btn');
+    const generateBtn = document.getElementById('generate-btn');
+    const clearBtn = document.getElementById('clear-btn');
+
+    // Load logs from localStorage
+    function loadLogs() {
+      conversationLogs = JSON.parse(localStorage.getItem('conversationLogs') || '[]');
+      renderLogs();
+    }
+
+    // Add a new log entry
+    function addLog() {
+      const message = messageInput.value.trim();
+      if (!message) return;
+      
+      const newLog = {
+        message,
+        timestamp: new Date().toLocaleString()
+      };
+      
+      conversationLogs.push(newLog);
+      localStorage.setItem('conversationLogs', JSON.stringify(conversationLogs));
+      messageInput.value = '';
+      
+      renderLogs();
+      updateButtons();
+    }
+
+    // Render logs in the container
+    function renderLogs() {
+      logsContainer.innerHTML = '';
+      
+      if (conversationLogs.length === 0) {
+        logsContainer.innerHTML = '<p class="text-gray-500 italic">No conversation logs yet.</p>';
+        return;
+      }
+      
+      const ul = document.createElement('ul');
+      
+      conversationLogs.forEach((log, index) => {
+        const li = document.createElement('li');
+        li.className = 'log-entry mb-2 p-2 border border-gray-200 rounded';
+        
+        const timestamp = document.createElement('p');
+        timestamp.className = 'text-sm text-gray-500';
+        timestamp.textContent = log.timestamp;
+        
+        const content = document.createElement('p');
+        content.textContent = log.message;
+        
+        li.appendChild(timestamp);
+        li.appendChild(content);
+        ul.appendChild(li);
+      });
+      
+      logsContainer.appendChild(ul);
+    }
+
+    // Render captured conversations
+    function renderCaptured() {
+      if (aiPlatform) {
+        platformInfo.style.display = 'block';
+        platformName.textContent = aiPlatform;
+        messageCount.textContent = capturedConversations.length;
+      } else {
+        platformInfo.style.display = 'none';
+      }
+      
+      if (capturedConversations.length > 0) {
+        noConversation.style.display = 'none';
+        capturedContainer.style.display = 'block';
+        
+        capturedContainer.innerHTML = '';
+        
+        capturedConversations.forEach((message, index) => {
+          const div = document.createElement('div');
+          div.className = `p-2 mb-2 rounded ${message.role === 'user' ? 'bg-blue-50' : 'bg-gray-50'}`;
+          
+          const meta = document.createElement('p');
+          meta.className = 'text-xs text-gray-500';
+          meta.textContent = `${message.timestamp} - ${message.role}`;
+          
+          const content = document.createElement('p');
+          content.className = 'text-sm';
+          content.textContent = message.message.length > 150
+            ? message.message.substring(0, 150) + '...'
+            : message.message;
+          
+          div.appendChild(meta);
+          div.appendChild(content);
+          capturedContainer.appendChild(div);
+        });
+      } else {
+        noConversation.style.display = 'block';
+        capturedContainer.style.display = 'none';
+      }
+      
+      if (latestSummary) {
+        summaryContainer.style.display = 'block';
+        summaryText.textContent = latestSummary;
+      } else {
+        summaryContainer.style.display = 'none';
+      }
+      
+      updateButtons();
+    }
+
+    // Switch tabs
+    function switchTab(tab) {
+      activeTab = tab;
+      
+      if (tab === 'manual') {
+        manualTab.className = 'px-4 py-2 border-b-2 border-blue-500 font-medium';
+        capturedTab.className = 'px-4 py-2 text-gray-500';
+        manualSection.style.display = 'block';
+        capturedSection.style.display = 'none';
+      } else {
+        manualTab.className = 'px-4 py-2 text-gray-500';
+        capturedTab.className = 'px-4 py-2 border-b-2 border-blue-500 font-medium';
+        manualSection.style.display = 'none';
+        capturedSection.style.display = 'block';
+      }
+      
+      updateButtons();
+    }
+
+    // Generate summary
+    function generateSummary() {
+      const activeData = activeTab === 'manual' ? conversationLogs : capturedConversations;
+      
+      if (activeData.length === 0) return '';
+      
+      if (activeTab === 'manual') {
+        return activeData.map(log => `[${log.timestamp}] ${log.message}`).join('\n\n');
+      } else {
+        return activeData.map(log => `[${log.timestamp}] (${log.role}) ${log.message}`).join('\n\n');
+      }
+    }
+
+    // Generate AI summary
+    async function generateAISummary() {
+      const logsToSummarize = activeTab === 'manual'
+        ? conversationLogs.map(log => ({
+            message: log.message,
+            timestamp: log.timestamp,
+            role: 'user'
+          }))
+        : capturedConversations;
+      
+      if (logsToSummarize.length === 0) return;
+      
+      try {
+        const response = await fetch('/api/generate-summary', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ logs: logsToSummarize })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          latestSummary = data.summary;
+          
+          if (activeTab === 'captured') {
+            summaryContainer.style.display = 'block';
+            summaryText.textContent = latestSummary;
+          }
+        }
+      } catch (error) {
+        console.error('Error generating AI summary:', error);
+        alert('Error generating the summary. Check if the server is running.');
+      }
+    }
+
+    // Download summary
+    function downloadSummary() {
+      const summaryContent = activeTab === 'captured' && latestSummary
+        ? latestSummary
+        : generateSummary();
+      
+      const blob = new Blob([summaryContent], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `conversation_summary_${new Date().toISOString().slice(0, 10)}.txt`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+
+    // Clear logs
+    function clearLogs() {
+      if (activeTab === 'manual') {
+        conversationLogs = [];
+        localStorage.removeItem('conversationLogs');
+        renderLogs();
+      } else {
+        capturedConversations = [];
+        latestSummary = '';
+        renderCaptured();
+      }
+      
+      updateButtons();
+    }
+
+    // Update button states
+    function updateButtons() {
+      const activeData = activeTab === 'manual' ? conversationLogs : capturedConversations;
+      
+      if (activeData.length > 0) {
+        downloadBtn.disabled = false;
+        downloadBtn.className = 'download-btn mt-4 px-4 py-2 rounded transition duration-150 bg-blue-500 text-white hover:bg-blue-600';
+        
+        generateBtn.disabled = false;
+        generateBtn.className = 'px-4 py-2 rounded transition duration-150 bg-purple-500 text-white hover:bg-purple-600';
+        
+        clearBtn.style.display = 'block';
+      } else {
+        downloadBtn.disabled = true;
+        downloadBtn.className = 'download-btn mt-4 px-4 py-2 rounded transition duration-150 bg-gray-300 text-gray-500 cursor-not-allowed';
+        
+        generateBtn.disabled = true;
+        generateBtn.className = 'px-4 py-2 rounded transition duration-150 bg-gray-300 text-gray-500 cursor-not-allowed';
+        
+        clearBtn.style.display = 'none';
+      }
+    }
+
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      loadLogs();
+      renderCaptured();
+      
+      manualTab.addEventListener('click', () => switchTab('manual'));
+      capturedTab.addEventListener('click', () => switchTab('captured'));
+      
+      addLogBtn.addEventListener('click', addLog);
+      messageInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          addLog();
+        }
+      });
+      
+      downloadBtn.addEventListener('click', downloadSummary);
+      generateBtn.addEventListener('click', generateAISummary);
+      clearBtn.addEventListener('click', clearLogs);
+      
+      updateButtons();
+    });
+  </script>
+</body>
+</html> 

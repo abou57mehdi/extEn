@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Conversation Log & Summary</title>
+    <style>
+      body {
+        width: 320px;
+        background-color: #f9f6ff;
+        padding: 16px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        margin: 0;
+      }
+      .container {
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        padding: 16px;
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+      }
+      h1 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 16px;
+        color: #5b21b6;
+        text-align: center;
+      }
+      .input-field {
+        position: relative;
+        margin-bottom: 12px;
+        border-radius: 12px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        background-color: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      }
+      .input-field .icon {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #7c3aed;
+        margin-left: 12px;
+      }
+      .input-field input {
+        flex: 1;
+        border: none;
+        padding: 12px;
+        font-size: 14px;
+        background: transparent;
+        outline: none;
+      }
+      .status-box {
+        background-color: rgba(124, 58, 237, 0.1);
+        padding: 12px;
+        border-radius: 12px;
+        margin-bottom: 16px;
+      }
+      .status-text {
+        color: #5b21b6;
+        font-size: 0.875rem;
+        margin: 0;
+      }
+      .button-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      button {
+        border: none;
+        border-radius: 10px;
+        padding: 10px;
+        font-weight: 500;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .btn-blue {
+        background-color: #7c3aed;
+        color: white;
+      }
+      .btn-blue:hover:not(:disabled) {
+        background-color: #6d28d9;
+      }
+      .btn-green {
+        background-color: #10b981;
+        color: white;
+      }
+      .btn-green:hover:not(:disabled) {
+        background-color: #059669;
+      }
+      .btn-red {
+        background-color: #ef4444;
+      }
+      .btn-red:hover:not(:disabled) {
+        background-color: #b91c1c;
+      }
+      .btn-orange {
+        background-color: #f59e0b;
+      }
+      .btn-orange:hover:not(:disabled) {
+        background-color: #d97706;
+      }
+      .hidden {
+        display: none;
+      }
+      .summary-section {
+        margin-bottom: 16px;
+      }
+      h2 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #4b5563;
+        margin-bottom: 8px;
+      }
+      .summary-content {
+        background-color: #f9fafb;
+        padding: 12px;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        color: #4b5563;
+      }
+      .stats-section {
+        border-top: 1px solid #e5e7eb;
+        padding-top: 12px;
+      }
+      .stats-text {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin: 4px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Conversation Log & Summary</h1>
+
+      <div>
+        <!-- Status Section -->
+        <div class="status-box">
+          <p class="status-text" id="status">
+            En attente d'une conversation...
+          </p>
+        </div>
+
+        <!-- Actions Section -->
+        <div class="button-group">
+          <button id="generateSummary" class="btn-blue">
+            Générer un résumé
+          </button>
+          <button id="downloadConversation" class="btn-green">
+            Télécharger la conversation
+          </button>
+          <button id="clearConversation" class="btn-red">
+            Effacer la conversation
+          </button>
+          <button id="reloadExtension" class="btn-orange">
+            Recharger l'extension
+          </button>
+        </div>
+        <!-- Summary Section -->
+        <div id="summarySection" class="summary-section hidden">
+          <h2>Résumé</h2>
+          <div id="summaryContent" class="summary-content"></div>
+          <button id="downloadSummary" class="btn-green mt-2">
+            Télécharger le résumé
+          </button>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats-section">
+          <p class="stats-text">Messages: <span id="messageCount">0</span></p>
+          <p class="stats-text">Plateforme: <span id="platform">-</span></p>
+        </div>
+      </div>
+    </div>
+    <script src="../config.js" type="module"></script>
+    <script src="popup.js" type="module"></script>
+  </body>
+</html>

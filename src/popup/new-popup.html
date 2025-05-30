@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Checkpoint</title>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <!-- AI Checkpoint Logo -->
+        <img src="icons/icon48.png" alt="AI Checkpoint Logo" class="logo"> 
+        <div class="title">AI Checkpoint</div>
+      </div>
+
+      <!-- Section Items / Settings -->
+      <div class="section-item">
+        <div class="label">AI Platform</div>
+        <input type="text" id="platform" class="input-field" placeholder="Detecting..." readonly />
+      </div>
+
+       <div class="section-item">
+        <div class="label">Conversation Date</div>
+        <input type="text" id="timestamp" class="input-field" placeholder="Fetching..." readonly />
+      </div>
+
+      <!-- Generate Summary Button -->
+      <button id="generateSummary" class="button button-primary" style="margin-top: var(--spacing-lg);"> 
+        Générer un résumé
+      </button>
+
+      <!-- Summary Section -->
+      <div id="summarySection" class="summary-section hidden">
+        <div class="info-text" style="margin-top: var(--spacing-lg);">Résumé de la conversation:</div>
+        <div id="summaryContent" class="summary-content"></div>
+        <div class="action-buttons" style="margin-top: var(--spacing-md);">
+          <button id="copySummary" class="button button-secondary">
+            Copier
+          </button>
+          <button id="downloadSummary" class="button button-secondary">
+            Télécharger
+          </button>
+          <button id="toggleSummary" class="button button-secondary">
+            ▼
+          </button>
+        </div>
+      </div>
+
+      <!-- Info/Stats Section -->
+       <div class="info-text" style="margin-top: var(--spacing-lg);">
+           Messages: <span id="messageCount">0</span> | Version: <span id="version">1.0</span>
+       </div>
+
+       <!-- Action Buttons (like reload/clear) -->
+       <div class="action-buttons" style="margin-top: var(--spacing-lg);">
+           <button id="clearConversation" class="button button-link">Effacer Conversation</button>
+           <button id="reloadExtension" class="button button-link">Recharger Extension</button>
+       </div>
+
+      <!-- Potential Bottom Bar - Not in current scope based on image, but kept for future -->
+      <!--
+      <div class="bottom-bar">
+        <div class="bottom-bar-item">
+          <div class="icon"></div>
+          <span>New Document</span>
+        </div>
+        <div class="bottom-bar-item">
+          <div class="icon"></div>
+          <span>My Grammarly</span>
+        </div>
+      </div>
+      -->
+
+    </div>
+    <script src="../config.js" type="module"></script>
+    <script src="new-popup.js" type="module"></script>
+  </body>
+</html>

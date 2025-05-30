@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Conversation Log & Summary</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="w-96 bg-gray-100 p-4">
+    <div class="bg-white rounded-lg shadow-lg p-4">
+      <h1 class="text-xl font-bold mb-4 text-gray-800">
+        Conversation Log & Summary
+      </h1>
+
+      <div class="space-y-4">
+        <!-- Status Section -->
+        <div class="bg-blue-50 p-3 rounded-md">
+          <p class="text-sm text-blue-800" id="status">
+            En attente d'une conversation...
+          </p>
+        </div>
+
+        <!-- Actions Section -->
+        <div class="space-y-2">
+          <button
+            id="generateSummary"
+            class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400"
+          >
+            Générer un résumé
+          </button>
+          <button
+            id="downloadConversation"
+            class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors"
+          >
+            Télécharger la conversation
+          </button>
+          <button
+            id="clearConversation"
+            class="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition-colors"
+          >
+            Effacer la conversation
+          </button>
+        </div>
+        <!-- Summary Section -->
+        <div id="summarySection" class="hidden">
+          <h2 class="font-semibold text-gray-700 mb-2">Résumé</h2>
+          <div
+            id="summaryContent"
+            class="bg-gray-50 p-3 rounded-md text-sm text-gray-600"
+          ></div>
+          <button
+            id="downloadSummary"
+            class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors mt-2"
+          >
+            Télécharger le résumé
+          </button>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="border-t pt-3">
+          <p class="text-sm text-gray-600">
+            Messages: <span id="messageCount">0</span>
+          </p>
+          <p class="text-sm text-gray-600">
+            Plateforme: <span id="platform">-</span>
+          </p>
+        </div>
+      </div>
+    </div>
+    <script src="popup.js" type="module"></script>
+  </body>
+</html>
